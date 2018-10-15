@@ -1,0 +1,79 @@
+
+input[type=text] {
+	width: 100%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	border: 2px solid black;
+	border-radius: 2px;
+	background-color: #f1f1f1;
+}
+			
+select {
+	width: 100%;
+	padding: 10px 20px;
+	border: 2px solid black;
+	border-radius: 4px;
+	background-color: #f1f1f1;
+}
+		
+input[type=date] {
+	width:100%;
+	padding: 15px, 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	border: 2px solid black;
+	border-radius: 2px;
+	background-color: #f1f1f1;
+}
+
+input[type=submit] {
+	display: inline-block;
+	padding: 5px 25px;
+	font-size: 20px;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	outline: none;
+	color: #fff;
+	background-color: #4CAF50;
+	border: 2px solid black;
+	border-radius: 10px;
+	box-shadow: 0 5px #999;
+}
+
+input[type=submit]:hover {
+	background-color: #3e8e41;
+}
+
+input[type=submit]:active {
+	background-color: #3e8e41;
+	box-shadow: 0 5px #666;
+	transform: translateY(4px);
+}
+
+input[type=reset] {
+	display: inline-block;
+	padding: 5px 25px;
+	font-size: 20px;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	outline: none;
+	color: #fff;
+	background-color: #4CAF50;
+	border: 2px solid black;
+	border-radius: 10px;
+	box-shadow: 0 5px #999;
+}	
+
+input[type=reset]:hover {
+	background-color: #3e8e41;
+}
+
+input[type=reset]:active {
+	background-color: #3e8e41;
+	box-shadow: 0 5px #666;
+	transform: translateY(4px);
+}
+

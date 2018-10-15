@@ -1,0 +1,16 @@
+/*
+*	CSS to handle the view of the edit buttons in dashboard
+*/
+
+.file_index_edit_buttons {
+    height: 30px;
+}
+
+button {
+    display: none;
+}
+
+.file_index_edit_buttons:hover button {
+    display: block;
+}
+

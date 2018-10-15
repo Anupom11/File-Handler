@@ -1,0 +1,112 @@
+
+/*
+*	Style for file index
+*/
+.file_index_style {
+	width: 100%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	border: 2px solid green;
+	border-radius: 2px;
+	background-color: #f1f1f1;
+}
+
+/*
+*	Style for matters #1
+*/
+.matter_style0 {
+	width: 100%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	border: 3px solid green;
+	border-radius: 2px;
+	background-color: #f1f1f1;
+}
+
+/*
+*	Style for matters #2
+*/
+.matter_style1 {
+	width: 100%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	border: 3px solid black;
+	border-radius: 2px;
+	background-color: #f1f1f1;
+}
+
+/*
+*	Style for date value
+*/
+.date_style {
+	width: 100%;
+	padding: 12px, 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	border: 3px solid black;
+	border-radius: 2px;
+	background-color: #f1f1f1;
+}
+
+/*
+*	File names style
+*/
+.file_names_style {
+	width: 100%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	border: 2px solid green;
+	border-radius: 2px;
+	background-color: #f1f1f1;
+}
+
+.doc_search_textbox {
+    float: left;
+    padding: 6px;
+    border: box;
+    margin-top: 5px;
+	margin-bottom: 5px;
+    margin-right: 16px;
+    font-size: 17px;
+	width: 300px;
+}
+
+.doc_search_button {
+	float: left;
+	padding: 6px 10px;
+	margin-top: 5px;
+	margin-right: 16px;
+	background: #f1f1f1;
+	font-size: 17px;
+	border: box;
+	cursor: pointer;
+}
+
+.upload_button {
+    float: left;
+	padding: 16px;
+	margin-top: 5px;
+	margin-right: 16px;
+	background: #4CAF50;
+	font-size: 16px;
+	border: none;
+	cursor: pointer;
+	color: white;
+}
+
+.addUser_button {
+	float: left;
+	padding: 16px;
+	margin-top: 5px;
+	margin-right: 16px;
+	background: #4CAF50;
+	font-size: 16px;
+	border: none;
+	cursor: pointer;
+	color: white;
+}
+
