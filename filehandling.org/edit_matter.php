@@ -57,6 +57,14 @@
 	
 	<body>
 		<?php	
+		
+		//*******************************************************************************
+		require_once 'C:\wamp\www\filehandling.org\db_connections\dbConfig.php';
+		require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
+	
+		$dbConnect = new fileHandlerDB($pdo);	// creating db class object
+		//*******************************************************************************
+		
 		if(isset($_SESSION['user_name']) && isset($_SESSION['sID']))
 		{
 			$user_name = $_SESSION['user_name'];
@@ -88,20 +96,41 @@
 			// code section added on 07/10/2018, by Anupom Chakrabarty
 			// now collect the further details from the DB according to the serial number
 			
-			$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
-			$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
+			//$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
+			//$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
 			
-			// getting the file index value for selector
-			$fileIndexQuery		= "select distinct file_index from document_details";
-			$fileIndexResult	= mysql_query($fileIndexQuery) or die(mysql_error());
-			$numFileIndex 		= mysql_num_rows($fileIndexResult);
+			// getting the file index value for selector section
+			//$fileIndexQuery	= "select distinct file_index from document_details";
+			//$fileIndexResult	= mysql_query($fileIndexQuery) or die(mysql_error());
+			//$numFileIndex 	= mysql_num_rows($fileIndexResult);
 			
-			$query	= "select file_index, date_val, matters, note_sheet, corr_note_sheet, nst_file_address, 
-															cnst_file_address from document_details where sl_no='$slNumber'";
-			$result		= mysql_query($query) or die(mysql_error());
-			$resultRow 	= mysql_fetch_array($result);
-			$numRow 	= mysql_num_rows($result);	// no of rows in the result
-		
+			$fileIndexResult = $dbConnect->getAllDistinctFileIndex();
+			$counter=0;
+			foreach($fileIndexResult as $fIndex) {
+				$fileIndexArr[$counter] = $fIndex[0];
+				$counter++;
+			}
+			$numFileIndex = count($fileIndexArr);	// get the size of the file index array
+						
+			//$query	= "select file_index, date_val, matters, note_sheet, corr_note_sheet, nst_file_address, 
+			//												cnst_file_address from document_details where sl_no='$slNumber'";
+			//$result		= mysql_query($query) or die(mysql_error());
+			//$resultRow 	= mysql_fetch_array($result);
+			//$numRow 	= mysql_num_rows($result);	// no of rows in the result
+			
+			// ---------------------get the matter details------------------
+			$matterResult	= $dbConnect->getMatterDetailsBySlNo($slNumber);
+			foreach($matterResult as $result) {
+				$mattrFileIndex = $result[0];
+				$mattrDateVal	= $result[1];
+				$mattrVal		= $result[2];
+				$nsVal			= $result[3];
+				$cnsVal			= $result[4];
+				$nsFileAddr		= $result[5];
+				$cnsFileAddr	= $result[6];				
+			}
+			$numRow = count($mattrFileIndex);
+			
 		?>
 			<div>
 				<table width="1327">
@@ -129,7 +158,7 @@
 						<tr>
 							<td>
 								<a href="dashboard.php" align="left"><font size="4">Cancel</font></p>
-						
+							</td>
 							<td>
 								<p align="center"><u><b><font size="5">Please update the following details</font></b></u></p>
 							</td>
@@ -145,22 +174,26 @@
 									//echo $numRow;
 									if($numFileIndex!=0)
 									{
-										while($row = mysql_fetch_array($fileIndexResult))
+										// checking for default select value
+										//$fileIndexValue = $resultRow["file_index"];	// value already given to the record
+										$fileIndexValue = $mattrFileIndex;
+										
+										//while($row = mysql_fetch_array($fileIndexResult))
+										for($i=0; $i<$numFileIndex; $i++)
 										{
 											//echo $numRow;
-											// checking for default select value
-											$fileIndexValue = $resultRow["file_index"];	// value already given to the record
-											$getFileIndex 	= $row["file_index"];		// file index value list
+											//$getFileIndex 	= $row["file_index"];		// file index value list
+											$getFileIndex	= $fileIndexArr[$i];
 											if(strcasecmp($fileIndexValue, $getFileIndex)==0)
 											{
 											?>
-												<option value="<?php echo $row["file_index"]; ?>" onload="new_file_index_check();" selected> <?php echo $row["file_index"]; ?> </option>
+												<option value="<?php echo $getFileIndex; //echo $row["file_index"]; ?>" onload="new_file_index_check();" selected> <?php echo $getFileIndex; //echo $row["file_index"]; ?> </option>
 											<?php
 											}
 											else
 											{
 											?>
-												<option value="<?php echo $row["file_index"]; ?>"> <?php echo $row["file_index"]; ?> </option>
+												<option value="<?php echo $getFileIndex; //echo $row["file_index"]; ?>"> <?php echo $getFileIndex; //echo $row["file_index"]; ?> </option>
 											<?php
 											}
 										}
@@ -176,19 +209,19 @@
 						?>		
 							<tr>
 								<td><font color="#FFFFFF"><b>Date:</b></font></td>
-								<td width="218"><input type="date" name="date_val" size="30" value='<?php echo $resultRow["date_val"] ?>'></input></td>
+								<td width="218"><input type="date" name="date_val" size="30" value='<?php echo $mattrDateVal; //echo $resultRow["date_val"] ?>'></input></td>
 							</tr>
 						
 							<tr>
 								<td><font color="#FFFFFF"><b>Matters:</b></font></td>
-								<td width="218"><input type="text" name="matters" size="30" value='<?php echo $resultRow["matters"] ?>'></input></td>
+								<td width="218"><input type="text" name="matters" size="30" value='<?php echo $mattrVal; //echo $resultRow["matters"] ?>'></input></td>
 							</tr>
 							
 							<tr>
 								<td><font color="#FFFFFF"><b>Note Sheet:</b></font></td>
-								<td><input type="text" name="note_sheet_file_name" size="30" value='<?php echo $resultRow["note_sheet"] ?>'></input></td>
+								<td><input type="text" name="note_sheet_file_name" size="30" value='<?php echo $nsVal; //echo $resultRow["note_sheet"] ?>'></input></td>
 								<td width="422">
-									<input type="text" name="uploaded_ns_fileName" readonly="readonly" value='<?php echo $resultRow["nst_file_address"] ?>' size="30"> </input>
+									<input type="text" name="uploaded_ns_fileName" readonly="readonly" value='<?php echo $nsFileAddr; //echo $resultRow["nst_file_address"] ?>' size="30"> </input>
 								</td>
 								<td width="422">
 								<input type="file" name="note_sheet" size="21" /></td>
@@ -196,9 +229,9 @@
 							
 							<tr>
 								<td><font color="#FFFFFF"><b>Correspondent Note Sheet:</b></font></td>
-								<td><input type="text" name="corr_note_sheet_file_name" size="30" value='<?php echo $resultRow["corr_note_sheet"] ?>'></input></td>
+								<td><input type="text" name="corr_note_sheet_file_name" size="30" value='<?php echo $cnsVal; //echo $resultRow["corr_note_sheet"] ?>'></input></td>
 								<td width="422">
-									<input type="text" name="uploaded_cns_fileName" readonly="readonly" value='<?php echo $resultRow["cnst_file_address"] ?>' size="29"> </input>
+									<input type="text" name="uploaded_cns_fileName" readonly="readonly" value='<?php echo $cnsFileAddr; //echo $resultRow["cnst_file_address"] ?>' size="29"> </input>
 								</td>
 								<td width="422">
 								<input type="file" name="corr_note_sheet" size="20" /></td>
