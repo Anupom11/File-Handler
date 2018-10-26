@@ -25,6 +25,13 @@
 		{
 			function update_user_account()
 			{
+				//******************************************************************************
+				require_once 'C:\wamp\www\filehandling.org\db_connections\dbConfig.php';
+				require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
+		
+				$dbConnect = new fileHandlerDB($pdo);	// creating db class object
+				//*******************************************************************************
+				
 				// doing deletation operation
 
 				// $response = array();
@@ -36,21 +43,23 @@
 				
 				// new user account details
 				$update_user_name 	= $_POST['updateUserName'];
-				$update_pwd		= $_POST['updatePassword'];
-				$update_uid		= $_POST['updateUserID'];
+				$update_pwd			= $_POST['updatePassword'];
+				$update_uid			= $_POST['updateUserID'];
 				
 				//echo $current_user_name." ".$current_pwd." ".$current_uid."+".$update_user_name." ".$update_pwd." ".$update_uid;
 				
 				
 				// do the connection with the server and with the database.
-				$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
-				$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
+				//$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
+				//$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
 					
-				$query 	= "update user_account set user_name='$update_user_name', password='$update_pwd', user_id='$update_uid' 
-								where user_name='$current_user_name' and password='$current_pwd' and user_id='$current_uid'";
-				$result	= mysql_query($query);
+				//$query 	= "update user_account set user_name='$update_user_name', password='$update_pwd', user_id='$update_uid' 
+				//				where user_name='$current_user_name' and password='$current_pwd' and user_id='$current_uid'";
+				//$result	= mysql_query($query);
 
-				if($result){
+				$result = $dbConnect->editUserAccount($update_user_name, $update_pwd, $update_uid, $current_user_name, $current_pwd, $current_uid);
+				
+				if($result>0){
 					//echo "Successfully added";
 					return true;
 				}else{
