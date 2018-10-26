@@ -57,6 +57,14 @@
 	
 	<body>
 		<?php	
+		
+		//******************************************************************************
+		require_once 'C:\wamp\www\filehandling.org\db_connections\dbConfig.php';
+		require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
+	
+		$dbConnect = new fileHandlerDB($pdo);	// creating db class object
+		//*******************************************************************************
+		
 		if(isset($_SESSION['user_name']) && isset($_SESSION['sID']))
 		{
 			$user_name = $_SESSION['user_name'];
@@ -74,11 +82,19 @@
 		if($sessionID == "login_success")
 		{
 			// collecting the file index data from the database
-			$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
-			$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
-			$query	= "select distinct file_index from document_details";
-			$result	= mysql_query($query) or die(mysql_error());
-			$numRow = mysql_num_rows($result);	// no of rows in the result
+			//$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
+			//$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
+			//$query	= "select distinct file_index from document_details";
+			//$result	= mysql_query($query) or die(mysql_error());
+			//$numRow = mysql_num_rows($result);	// no of rows in the result
+			
+			$returnedfileIndex	= $dbConnect->getAllDistinctFileIndex();
+			$counter 			= 0;
+			foreach($returnedfileIndex as $index) {
+				$fileIndexArr[$counter] = $index[0];
+				$counter++;
+			}
+			$numRow = count($fileIndexArr);
 		
 		?>
 			<div>
@@ -117,11 +133,12 @@
 									//echo $numRow;
 									if($numRow!=0)
 									{
-										while($row = mysql_fetch_array($result))
+										//while($row = mysql_fetch_array($result))
+										for($i=0; $i<$numRow; $i++)
 										{
 											//echo $numRow;
 											?>
-											<option value="<?php echo $row["file_index"]; ?>"> <?php echo $row["file_index"]; ?> </option>
+											<option value="<?php echo $fileIndexArr[$i]; //echo $row["file_index"]; ?>"> <?php echo $fileIndexArr[$i]; //echo $row["file_index"]; ?> </option> 
 											<?php
 										}
 									}
