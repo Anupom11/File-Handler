@@ -11,6 +11,13 @@
 	
 		<?php
 
+			//******************************************************************************
+			require_once 'C:\wamp\www\filehandling.org\db_connections\dbConfig.php';
+			require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
+		
+			$dbConnect = new fileHandlerDB($pdo);	// creating db class object
+			//*******************************************************************************
+		
 			// checking for session data
 			if(isset($_SESSION['user_name']) && isset($_SESSION['sID']))
 			{
@@ -85,12 +92,12 @@
 					$userAddCorrNoteSheetFileName 	= basename($_FILES['corr_note_sheet']['name']);
 					
 					//----------------------------------------------------------------------------------------
-					$userNSFileAddFlag	= false;	// flag variable for user file input operation. True if user add the file else flase
+					$userNSFileAddFlag	= false;	// flag variable for user file input operation. True if user add the file else false
 					$userCNSFileAddFlag = false;
 					// for note sheet
 					if($userAddNoteSheetFileName!= null)
 					{
-						$target_path_ns		= $target_path_ns.basename($_FILES['note_sheet']['name']);
+						$target_path_ns		= $target_path_ns.basename($_FILES['note_sheet']['name']);				
 						$userNSFileAddFlag	= true;
 					}
 					else
@@ -109,18 +116,23 @@
 					//echo $file_index_val." ".$date_val." ".$matters." ".$note_sheet_file_name;
 					//*******************************************************************************************************************
 													
-					$conn 	= mysql_connect('127.0.0.1', 'root', 'admin')	or die('Could not connect to database server');
-					$db		= mysql_select_db('office_file_handling', $conn) or die('Could not connect to the database');
+					//$conn 	= mysql_connect('127.0.0.1', 'root', 'admin')	or die('Could not connect to database server');
+					//$db		= mysql_select_db('office_file_handling', $conn) or die('Could not connect to the database');
 				
 					if(isset($_POST['matters']))	// checking for any entry.
 					{	
 						//$qryInsert= "INSERT INTO document_details(file_index, date_val, matters, note_sheet, corr_note_sheet, nst_file_address, cnst_file_address) VALUES ('$file_index_val', '$date_val', '$matters', '$note_sheet_file_name', '$corr_note_sheet_file_name', '$target_path_ns', '$target_path_cns')";
-						$qryInsert= "update document_details set file_index='$file_index_val', date_val='$date_val' , 
-										matters='$matters', note_sheet='$note_sheet_file_name', corr_note_sheet='$corr_note_sheet_file_name', 
-											nst_file_address='$target_path_ns', cnst_file_address='$target_path_cns' where sl_no='$sl_number'";
-						$rsInsert= mysql_query($qryInsert) or die(mysql_error());
+						//$qryInsert= "update document_details set file_index='$file_index_val', date_val='$date_val' , 
+						//				matters='$matters', note_sheet='$note_sheet_file_name', corr_note_sheet='$corr_note_sheet_file_name', 
+						//					nst_file_address='$target_path_ns', cnst_file_address='$target_path_cns' where sl_no='$sl_number'";
+						//$rsInsert= mysql_query($qryInsert) or die(mysql_error());
 						
-						if($rsInsert == true)
+						// **********update the current record in DB**************
+						$updateReturn = $dbConnect->updateMatterRecord($file_index_val, $date_val, $matters, $note_sheet_file_name, 
+																			$corr_note_sheet_file_name, $target_path_ns, $target_path_cns, $sl_number);
+						
+						//if($rsInsert == true)
+						if($updateReturn>0)
 						{
 							if($userNSFileAddFlag == true && $userCNSFileAddFlag == true)
 							{
@@ -167,8 +179,10 @@
 								header('location:dashboard.php');
 							}
 						}
-						else
-						{
+						else if($updateReturn == 0) {
+							echo "Update operation failed!";
+						}
+						else {
 							echo "Sorry! some error occurs";
 						}
 					}
