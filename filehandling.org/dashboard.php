@@ -134,6 +134,14 @@
 	<body onload="hide_details(10);">
 	
 	<?php	
+	
+	//******************************************************************************
+	require_once 'C:\wamp\www\filehandling.org\db_connections\dbConfig.php';
+	require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
+	
+	$dbConnect = new fileHandlerDB($pdo);	// creating db class object
+	//*******************************************************************************
+	
 		if(isset($_SESSION['user_name']) && isset($_SESSION['sID']))
 		{
 			$user_name = $_SESSION['user_name'];
@@ -152,14 +160,20 @@
 		{
 			// now check for whether it is admin or other user login
 			// connecting to the database
-			$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
-			$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
+			//$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
+			//$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
 			
 			// retrieve information from the admin_account table
+			/*
 			$admin_query		= "select admin_name from admin_account";
 			$admin_result		= mysql_query($admin_query) or die(mysql_error);
 			$admin_result_array = mysql_fetch_array($admin_result);
 			$admin_name			= $admin_result_array["admin_name"];
+			*/
+			$adminName= $dbConnect->getAdminName();
+			foreach($adminName as $aName) 
+				$admin_name = $aName[0];
+				
 	?>
 			<div>
 				<table width="1327">
@@ -216,7 +230,7 @@
 			</div>	
 			
 			<?php
-				// php section at on 15/09/2018 for testing user search input
+				// php section at on 24/10/2018 for testing user search input
 				$searchKeywordFlag = false;
 				if(isset($_GET['search']))
 				{
@@ -225,15 +239,32 @@
 					
 					$searchKeyword = $_GET['search'];	// get the search keyword
 					//echo $searchKeyword;
-					$query_FI = "select distinct file_index from document_details where file_index like '%$searchKeyword%' union select distinct file_index
-									from document_details where matters like '$searchKeyword%'";
-					$result_FileIndex = mysql_query($query_FI) or die(mysql_error());
+					//$query_FI = "select distinct file_index from document_details where file_index like '%$searchKeyword%' union select distinct file_index
+					//				from document_details where matters like '%$searchKeyword%'";
+					//$result_FileIndex = mysql_query($query_FI) or die(mysql_error());
+					
+					$searchResult = $dbConnect->getSearchResult($searchKeyword);
+					
+					$count=0;
+					foreach($searchResult as $rslt) {
+						//echo $rslt[0];
+						$result_FileIndex[$count] = $rslt[0];
+						$count++;
+					}
 				}		
 				else
 				{
 					// retrieving the file index values from the table.				
-					$query				= "select distinct file_index from document_details";
-					$result_FileIndex	= mysql_query($query) or die(mysql_error());	
+					//$query			= "select distinct file_index from document_details";
+					//$result_FileIndex	= mysql_query($query) or die(mysql_error());	
+					$getFileIndex = $dbConnect->getAllDistinctFileIndex();
+					
+					$count=0;
+					foreach($getFileIndex as $fileIndex) {
+						//echo " ".$fileIndex[0];
+						$result_FileIndex[$count] = $fileIndex[0];
+						$count++;
+					}					
 				}
 				
 				// **************************show the details here*************************************
@@ -242,21 +273,48 @@
 				{
 					$i=0;	// initializing the variable
 					
-					while($row = mysql_fetch_array($result_FileIndex))
+					//while($row = mysql_fetch_array($result_FileIndex))
+					for($sl=0; $sl<count($result_FileIndex); $sl++)
 					{
 						$index_variable = "file_index$i";		// id values for file index field
 						
 						// get the matters and file details against the file index
-						$file_index_val 	= $row["file_index"];	// getting the index value
+						//$file_index_val 	= $row["file_index"];	// getting the index value
+						$file_index_val = $result_FileIndex[$sl];	// <----getting the index value here---->
+						//echo $file_index_val." ";						
+						//$mttr_flDtls_query 	= "select date_val, matters, note_sheet, corr_note_sheet, nst_file_address, cnst_file_address, 
+						//							sl_no from document_details where file_index='$file_index_val'";
+						//$mttr_flDtls_result 	= mysql_query($mttr_flDtls_query) or die(mysql_error());
+						//$noRows 				= mysql_num_rows($mttr_flDtls_result);	// getting the number of rows
 						
-						$mttr_flDtls_query 	= "select date_val, matters, note_sheet, corr_note_sheet, nst_file_address, cnst_file_address, sl_no from document_details where file_index='$file_index_val'";
-						$mttr_flDtls_result = mysql_query($mttr_flDtls_query) or die(mysql_error());
-						$noRows 			= mysql_num_rows($mttr_flDtls_result);	// getting the number of rows
+						$mttr_flDtls_result = $dbConnect->getDocumentDetails($file_index_val);
+						
+						$counter			= 0;
+						$mattrAllDetails	= array();	// initialize array to hold the file index matter details
+						
+						foreach($mttr_flDtls_result as $mttrFlDtlResult) {
+							
+							$dateVal		= $mttrFlDtlResult[0];
+							$matterValue	= $mttrFlDtlResult[1];
+							$nsVal			= $mttrFlDtlResult[2];
+							$cnsVal			= $mttrFlDtlResult[3];
+							$nsFileAddr 	= $mttrFlDtlResult[4];
+							$cnsFileAddr	= $mttrFlDtlResult[5];
+							$slNo			= $mttrFlDtlResult[6];
+							
+							// put the details in to a multi dimension array
+							$mattrAllDetails[$counter] = array($dateVal, $matterValue, $nsVal, $cnsVal, $nsFileAddr, $cnsFileAddr, $slNo);
+							$counter++;	// increment the counter
+						}
+						
+						// get the number of rows in matter details array
+						$noRows = count($mattrAllDetails);
+						//echo " ".$file_index_val." ".$noRows;
 					?>
 						<div>
 							<table border="0" height="50" width="600">
 								<tr id=<?php echo $index_variable;?> class="file_index_style">
-									<td onclick="showDetails('<?php echo $i?>', '<?php echo $noRows ?>');" > <b> <?php echo $row["file_index"]; ?> </b> </td>
+									<td onclick="showDetails('<?php echo $i?>', '<?php echo $noRows ?>');" > <b> <?php echo $file_index_val; //echo $row["file_index"]; ?> </b> </td>
 								<!--	<td span=4 width="250" align="center"><?php //echo $row["date_val"]; ?></td>	-->
 								<!-- Add the buttons to control the editing of file index record -->
 								<!------------------------------------------------------------------------------------------------------>
@@ -271,10 +329,10 @@
 											<table>
 												<tr>
 													<td>
-														<button type="button" onclick="openForm('<?php echo $row["file_index"] ?>');"><img src="icon\ic_action_edit.png" alt="EDIT" height="25" /></button>
+														<button type="button" onclick="openForm('<?php echo $file_index_val; //echo $row["file_index"] ?>');"><img src="icon\ic_action_edit.png" alt="EDIT" height="25" /></button>
 													</td>
 													<td>
-														<button type="button" onclick="delete_fileIndex('<?php echo $row["file_index"] ?>');"><img src="icon\ic_action_discard.png" alt="DELETE" height="25" /></button>
+														<button type="button" onclick="delete_fileIndex('<?php echo $file_index_val; //echo $row["file_index"] ?>');"><img src="icon\ic_action_discard.png" alt="DELETE" height="25" /></button>
 													</td>
 												</tr>
 											</table>
@@ -292,8 +350,20 @@
 						{
 							// initializing count variable
 							$count = 0;
-							while($detailsRows = mysql_fetch_array($mttr_flDtls_result))
+							//while($detailsRows = mysql_fetch_array($mttr_flDtls_result))
+							for($pos=0; $pos<count($mattrAllDetails); $pos++)
 							{
+								//************************************************
+								// get the details of a matter
+								$date 			= $mattrAllDetails[$pos][0];
+								$matter			= $mattrAllDetails[$pos][1];
+								$nsVal			= $mattrAllDetails[$pos][2];
+								$cnsVal			= $mattrAllDetails[$pos][3];
+								$nsFileAddr 	= $mattrAllDetails[$pos][4];
+								$cnsFileAddr	= $mattrAllDetails[$pos][5];
+								$slNo			= $mattrAllDetails[$pos][6];
+								//************************************************
+								
 								$index_matter_details 	= "matter_details$i$count";
 								$index_file_details		= "file_details$i$count";
 								// variable to hold the id for showFileDetails() method
@@ -306,7 +376,7 @@
 										<tr>
 											<td class="matter_style0" width="78%">
 												<div style="width: 350px; float:left;" onclick="view_doc('<?php echo $index_matter_details?>');" >
-													<?php echo $detailsRows["matters"]; ?>
+													<?php echo $matter; //echo $detailsRows["matters"]; ?>
 												</div>
 											<!-------------------------------------------------------------------------------------------------------------------->
 											<!-- div section to show the edit button for matters	-->
@@ -320,10 +390,10 @@
 													<table>
 														<tr>
 															<td>
-																<button type="button" onclick="edit_Matters('<?php echo $detailsRows["sl_no"] ?>');"><img src="icon\ic_action_edit.png" alt="EDIT" height="25" /></button>
+																<button type="button" onclick="edit_Matters('<?php echo $slNo; //echo $detailsRows["sl_no"] ?>');"><img src="icon\ic_action_edit.png" alt="EDIT" height="25" /></button>
 															</td>
 															<td>
-																<button type="button" onclick="delete_Matters('<?php echo $detailsRows["sl_no"] ?>');"><img src="icon\ic_action_discard.png" alt="DELETE" height="25" /></button>
+																<button type="button" onclick="delete_Matters('<?php echo $slNo; //echo $detailsRows["sl_no"] ?>');"><img src="icon\ic_action_discard.png" alt="DELETE" height="25" /></button>
 															</td>
 														</tr>
 													</table>
@@ -333,7 +403,7 @@
 										?>
 											<!-------------------------------------------------------------------------------------------------------------------->
 											</td>
-											<td class="date_style" span=4 width="6%" align="center"><?php echo $detailsRows["date_val"]; ?></td>
+											<td class="date_style" span=4 width="6%" align="center"><?php echo $date; //echo $detailsRows["date_val"]; ?></td>
 										</tr>
 									</table>
 								</div>
@@ -344,8 +414,8 @@
 										$nfs	= "ns$index_matter_details";
 										$cnfs	= "cns$index_matter_details";
 									?>
-									<p id=<?php echo $nfs?>><?php echo $detailsRows["nst_file_address"]; ?>  </p>
-									<p id=<?php echo $cnfs ?>><?php echo $detailsRows["cnst_file_address"]; ?>	</p>
+									<p id=<?php echo $nfs?>><?php echo $nsFileAddr; //echo $detailsRows["nst_file_address"]; ?>  </p>
+									<p id=<?php echo $cnfs ?>><?php echo $cnsFileAddr; //echo $detailsRows["cnst_file_address"]; ?>	</p>
 								</div>
 								<?php
 								/*
