@@ -58,6 +58,14 @@
 	
 	<body>
 		<?php	
+		
+		//******************************************************************************
+		require_once 'C:\wamp\www\filehandling.org\db_connections\dbConfig.php';
+		require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
+		
+		$dbConnect = new fileHandlerDB($pdo);	// creating db class object
+		//*******************************************************************************
+		
 		if(isset($_SESSION['user_name']) && isset($_SESSION['sID']))
 		{
 			$user_name = $_SESSION['user_name'];
@@ -75,12 +83,22 @@
 		if($sessionID == "login_success")
 		{
 			// collecting the file index data from the database
-			$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
-			$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
-			$query	= "select * from user_account";
-			$result	= mysql_query($query) or die(mysql_error());
-			$numRow = mysql_num_rows($result);	// no of rows in the result
+		//	$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
+		//	$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
+		//	$query	= "select * from user_account";
+		//	$result	= mysql_query($query) or die(mysql_error());
+		//	$numRow = mysql_num_rows($result);	// no of rows in the result
 		
+			$userDetails	= $dbConnect->user_details();
+			$count 			= 0;
+			foreach($userDetails as $details) {
+				$users_name[$count]	= $details[0];
+				$passWRD[$count]	= $details[1];
+				$user_id[$count]	= $details[2];
+				$count++;
+			}
+			$numRow = $count;	// set the number of rows in user account DB
+			
 		?>
 			<div>
 				<table width="1327">
@@ -131,11 +149,17 @@
 						<td></td>
 					</tr>
 				<?php
-					while($row = mysql_fetch_array($result))
-					{					
+					//while($row = mysql_fetch_array($result))
+					for($i=0; $i<$numRow; $i++)
+					{	
+						/*
 						$userName	= $row["user_name"];
 						$password	= $row["password"];
 						$user_id	= $row["user_id"];
+						*/
+						$userName 	= $users_name[$i];
+						$password 	= $passWRD[$i];
+						$userId		= $user_id[$i];
 					?>
 						<tr class="file_index_style" >
 						<!------------------------------------------------------------------------------------------------------>
@@ -146,10 +170,10 @@
 								<h3><?php echo $password; ?>
 							</td>
 							<td width="250">
-								<h3><?php echo $user_id; ?>
+								<h3><?php echo $userId; ?>
 							</td>
 							<td width="125" align="center">
-								<button type="button" onclick="openEditingForm('<?php echo $userName ?>', '<?php echo $password ?>', '<?php echo $user_id ?>');"><img src="icon\ic_action_edit.png" alt="EDIT" height="25" /></button>
+								<button type="button" onclick="openEditingForm('<?php echo $userName ?>', '<?php echo $password ?>', '<?php echo $userId ?>');"><img src="icon\ic_action_edit.png" alt="EDIT" height="25" /></button>
 							</td>
 							<td width="125" align="center">
 								<!------------------------------------------------------------------------------------------------
@@ -157,7 +181,7 @@
 								<form method="post" action="delete_user_account.php" >
 									<input type="hidden" id="userNameDelete" name="userNameDelete" value='<?php echo $userName ?>' />
 									<input type="hidden" id="passwordDelete" name="passwordDelete" value='<?php echo $password ?>' /> 
-									<input type="hidden" id="userIdDelete" name="userIdDelete" value='<?php echo $user_id ?>' />
+									<input type="hidden" id="userIdDelete" name="userIdDelete" value='<?php echo $userId ?>' />
 									<button type="submit"> <img src="icon\ic_action_discard.png" alt="DELETE" height="25"/></button>
 								</form>
 							</td>			
@@ -175,7 +199,7 @@
 		?>
 		
 		<!--------- Code section to handle the user detials editing form -----------------------------------------------------------------
-		----------- code added by Anupom Chakrabarty, date 13/10/2018 --------------------------->
+		----------- code added by Anupom Chakrabarty, date 26/10/2018 --------------------------->
 		<div class="form-popup" id="editUserDetails" >
 			<form method="post" action="edit_user_details.php" class="form-container">
 				<h2 align="center">Edit User Details</h2>
@@ -220,7 +244,7 @@
 		
 		<!-------------------------------------------------------------------------------------------------------------------------------------
 		-- Code section to add new user account ---------------------------------------------------------------------------------------------
-		-- by Anupom Chakrabarty, date 12/10/2018	------------------------------------------------------------------------------------------>
+		-- by Anupom Chakrabarty, date 26/10/2018	------------------------------------------------------------------------------------------>
 		<div class="form-popup" id="add_newAccount" >
 			<form method="post" action="add_new_account.php" class="form-container">
 				<h2 align="center">Enter account details</h2>
@@ -252,18 +276,30 @@
 		<!--------------------------------------------------------------------------------------------------------------------------------->
 		
 		<!-- Code Section to show the edit admin account panel ------------------------------------------------------------
-		------ Added on 14/10/2018 by Anupom Chakrabarty  ------------------------------------------------------------------>
+		------ Added on 14/10/2018 by Anupom Chakrabarty  last edited on 26/10/2018 --------------------------------------->
 		<?php
 			// connect to the database to retrieve admin account information 
-			$conn 	 = mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
-			$db		 = mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
-			$query	 = "select * from admin_account";
-			$result	 = mysql_query($query) or die(mysql_error());
-			$noAdmin = mysql_num_rows($result);
+			//$conn 	 = mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
+			//$db		 = mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
+			//$query	 = "select * from admin_account";
+			//$result	 = mysql_query($query) or die(mysql_error());
+			//$noAdmin = mysql_num_rows($result);
+			
+			$result		= $dbConnect->getDataAdminAccount();
+			$counter	= 0;
+			foreach($result as $adminData) {
+				$adminName[$counter] = $adminData[0];
+				$adminPass[$counter] = $adminData[1];
+				$adminID[$counter]   = $adminData[2];
+				$counter++;
+			}
+			$noAdmin = $counter;	// set the number of admins available
 			
 			if($noAdmin!=0)
 			{
-				$rowValue = mysql_fetch_array($result);
+				//$rowValue = mysql_fetch_array($result);
+				for($i=0; $i<$noAdmin; $i++)
+				{
 		?>
 				<div class="form-popup" id="editAdminAccount" >
 					<form method="post" action="edit_admin_account.php" class="form-container">
@@ -272,8 +308,8 @@
 							<tr>
 								<td>
 									<label for="adminName"><b>Admin Name</b></label>
-									<input type="text" placeholder="Admin Name" id="adminName" name="adminName" value=<?php echo $rowValue["admin_name"] ?> required >
-									<input type="text" name="currentAdminName" value=<?php echo $rowValue["admin_name"] ?> hidden />
+									<input type="text" placeholder="Admin Name" id="adminName" name="adminName" value=<?php echo $adminName[$i]; //echo $rowValue["admin_name"] ?> required >
+									<input type="text" name="currentAdminName" value=<?php echo $adminName[$i]; //echo $rowValue["admin_name"] ?> hidden />
 								</td>
 							</tr>
 							<tr>
@@ -285,7 +321,7 @@
 							<tr>
 								<td>
 									<label for="adminID"><b>User ID</b></label>
-									<input type="text" placeholder="Admin ID" id="adminID" name="adminID"  value=<?php echo $rowValue["admin_id"] ?> required >
+									<input type="text" placeholder="Admin ID" id="adminID" name="adminID"  value=<?php echo $adminID[$i]; //echo $rowValue["admin_id"] ?> required >
 								</td>
 							</tr>
 						</table>
@@ -294,6 +330,7 @@
 					</form>
 				</div>
 		<?php
+				}
 			}
 		?>
 		<!-------------------------------------------------------------------------------------------------------------------->
