@@ -16,6 +16,28 @@
 			return $query->fetchAll();
 		}
 		
+		// function to add new admin account
+		function addAdminAccount($user_name, $pwd, $uid) {
+			$addQuery	= "insert into admin_account values(?, ?, ?)";
+			$query		= $this->pdo->prepare($addQuery) ;
+			
+			$newAdminDetails = array($user_name, $pwd, $uid);
+			$query->execute($newAdminDetails);
+			
+			return $query->rowCount();	// count the number of rows
+		}
+		
+		// function to update admin account
+		function updateAdminAccount($admin_name, $adminpwd, $adminid, $adminCurrentName) {
+			$updateQuery = "update admin_account set admin_name=?, password=?, admin_id=? where admin_name=?";
+			
+			$query		 	= $this->pdo->prepare($updateQuery);
+			$accountDetails = array($admin_name, $adminpwd, $adminid, $adminCurrentName);
+			$query->execute($accountDetails);
+			
+			return $query->rowCount();
+		}
+		
 		// function to check login details in user_account table
 		function checkLoginUserAccount($id, $pwd) {
 			$query = $this->pdo->prepare('select * from user_account where user_id=? and password=?');
