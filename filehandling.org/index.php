@@ -54,15 +54,33 @@
 			</table>
 						
 			<?php 
+			
+			//******************************************************************************
+			require_once 'C:\wamp\www\filehandling.org\db_connections\dbConfig.php';
+			require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
+			
+			$dbConnect = new fileHandlerDB($pdo);	// creating db class object
+			//*******************************************************************************
+			
 			/*********************************************************************** 
 			* Code section to check admin sign up operation
-			* by Anupom Chakrabarty date 15/10/2018
+			* by Anupom Chakrabarty date 15/10/2018, last date of modification 27/10/2018
 			*/
-			$conn	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
-			$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
-			$query	= "select * from admin_account";
-			$result = mysql_query($query);
-			$numRow = mysql_num_rows($result);
+			//$conn	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
+			//$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
+			//$query	= "select * from admin_account";
+			//$result = mysql_query($query);
+			//$numRow = mysql_num_rows($result);
+			
+			$result = $dbConnect->getDataAdminAccount();
+			$count  = 0;
+			$adminDetails = array();
+			foreach($result as $rstl) {
+				$adminDetails[$count] = $rstl[0];
+				$count++;
+			}
+			$numRow = count($adminDetails);
+			
 			if($numRow!=0)
 			{
 				// do not show the sign up link
