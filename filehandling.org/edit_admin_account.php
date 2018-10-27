@@ -25,6 +25,13 @@
 		{
 			function edit_admin_account()
 			{
+				//******************************************************************************
+				require_once 'C:\wamp\www\filehandling.org\db_connections\dbConfig.php';
+				require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
+		
+				$dbConnect = new fileHandlerDB($pdo);	// creating db class object
+				//*******************************************************************************
+				
 				// $response = array();
 				
 				// take the admin current name and new admin name, id and password
@@ -34,16 +41,23 @@
 				$adminCurrentName 	= $_POST['currentAdminName'];
 								
 				// do the connection with the server and with the database.
-				$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
-				$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
+				//$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
+				//$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
 					
-				$query 	= "update admin_account set admin_name='$admin_name', password='$adminpwd', admin_id='$adminid' where admin_name='$adminCurrentName'";
-				$result	= mysql_query($query);
+				//$query 	= "update admin_account set admin_name='$admin_name', password='$adminpwd', admin_id='$adminid' where admin_name='$adminCurrentName'";
+				//$result	= mysql_query($query);
 
-				if($result){
+				$result = $dbConnect->updateAdminAccount($admin_name, $adminpwd, $adminid, $adminCurrentName);
+				
+				if($result>0){
 					//echo "Successfully deleted";
 					return true;
-				}else{
+				}
+				else if($result == 0) {
+					// echo "Error in edit operation";
+					return false;
+				}
+				else{
 					//echo "Something went wrong.";
 					return false;
 				}
