@@ -259,7 +259,8 @@
 					//$result_FileIndex	= mysql_query($query) or die(mysql_error());	
 					$getFileIndex = $dbConnect->getAllDistinctFileIndex();
 					
-					$count=0;
+					$count				=0;
+					$result_FileIndex 	= array();
 					foreach($getFileIndex as $fileIndex) {
 						//echo " ".$fileIndex[0];
 						$result_FileIndex[$count] = $fileIndex[0];
