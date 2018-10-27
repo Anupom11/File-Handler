@@ -5,7 +5,7 @@
 
 <html>
 	<head>
-		<title> Delete File Index </title>
+		<title>Delete Matter Details</title>
 	</head>
 	<body>
 	
@@ -16,7 +16,7 @@
 		require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
 	
 		$dbConnect = new fileHandlerDB($pdo);	// creating db class object
-	//*******************************************************************************
+		//*******************************************************************************
 	
 		if(isset($_SESSION['user_name']) && isset($_SESSION['sID']))
 		{
@@ -34,20 +34,20 @@
 		// checking for the session id
 		if($sessionID == "login_success")
 		{
-			if(isset($_GET['fileIndex']))
+			if(isset($_GET['number']))
 			{
-				$fileIndexVal = $_GET['fileIndex'];
-				
+				$slNumber = $_GET['number'];
+								
 				// ***********************now delete the following file index value**********************************************
 				// create connection with the database
 				// connecting to the database
 				//$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
 				//$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
 				
-				//$delete_query = "delete from document_details where file_index='$fileIndexVal'";
+				//$delete_query = "delete from document_details where sl_no='$slNumber'";
 				//$deleteResult = mysql_query($delete_query) or die(mysql_error());
 				
-				$deleteResult = $dbConnect->deleteFileIndex($fileIndexVal);
+				$deleteResult = $dbConnect->deleteMatterDetails($slNumber);
 				
 				// if successfully deleted then redirect to the dashboard page else show error message 
 				if($deleteResult>0)
@@ -55,12 +55,8 @@
 					echo "Deleted successfully!";
 					header('location:dashboard.php');
 				}
-				else if(deleteResult == 0)
-				{
-					echo "Delete operation failed!"
-				?>
-					<h3 align="left">Please <a href="dashboard.php> go back </a></h3>
-				<?php
+				else if($deleteResult == 0) {
+					echo "Delete operation failed";
 				}
 			}
 			else
