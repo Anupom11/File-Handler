@@ -90,6 +90,7 @@
 			
 			$returnedfileIndex	= $dbConnect->getAllDistinctFileIndex();
 			$counter 			= 0;
+			$fileIndexArr 		= array();
 			foreach($returnedfileIndex as $index) {
 				$fileIndexArr[$counter] = $index[0];
 				$counter++;
