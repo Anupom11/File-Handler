@@ -5,6 +5,13 @@
 
 		function sign_up()
 		{
+			//******************************************************************************
+			require_once 'C:\wamp\www\filehandling.org\db_connections\dbConfig.php';
+			require_once 'C:\wamp\www\filehandling.org\db_connections\dbAdapter.php';	
+			
+			$dbConnect = new fileHandlerDB($pdo);	// creating db class object
+			//*******************************************************************************
+			
 			// doing admin sign up operation
 
 			$response = array();
@@ -22,16 +29,23 @@
 			//$pwd ="helloworld";
 			
 			// do the connection with the server and with the database.
-			$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
-			$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
+			//$conn 	= mysql_connect('127.0.0.1', 'root', 'admin') or die("Can not connect with the server.");
+			//$db		= mysql_select_db('office_file_handling', $conn) or die("Can not select the database.");
 				
-			$query = "insert into admin_account values('$user_name', '$pwd', '$uid')";
-			$result	= mysql_query($query);
+			//$query = "insert into admin_account values('$user_name', '$pwd', '$uid')";
+			//$result	= mysql_query($query);
 
-			if($result){
+			$result = $dbConnect->addAdminAccount($user_name, $pwd, $uid);
+			
+			if($result>0){
 				//echo "Successfully created";
 				return true;
-			}else{
+			}
+			else if($result == 0) {
+				echo "Sign up operation failed";
+				return false;
+			}
+			else{
 				//echo "Something went wrong.";
 				return false;
 			}
