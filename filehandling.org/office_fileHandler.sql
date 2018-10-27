@@ -18,7 +18,8 @@ create table document_details
 	note_sheet varchar(200),
 	corr_note_sheet varchar(200),
 	nst_file_address varchar(200),
-	cnst_file_address varchar(200)
+	cnst_file_address varchar(200),
+	sl_no int auto_increment primary key
 );
 
 create table admin_account
