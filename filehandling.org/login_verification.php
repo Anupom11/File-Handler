@@ -44,6 +44,7 @@ function login()
 		$returned_name	= $row["user_id"];
 		$returned_pwd	= $row["password"];
 		*/
+		$returned_name = null;
 		foreach($result as $userResult) {
 			$user_name		= $userResult[0];	// set the user name in session variable
 			$returned_name	= $userResult[2];
