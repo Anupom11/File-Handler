@@ -149,10 +149,10 @@
 		}
 		
 		// function to insert new document details in DB
-		function uploadNewDoc($file_index_val, $date_val, $matters, $note_sheet_file_name, $corr_note_sheet_file_name, $target_path_ns, $target_path_cns) {
+		function uploadNewDoc($file_index_val, $date_val, $matters_val, $note_sheet_file_name, $corr_note_sheet_file_name, $target_path_ns, $target_path_cns) {
 			$qryInsert	= "INSERT INTO document_details(file_index, date_val, matters, note_sheet, corr_note_sheet, nst_file_address, cnst_file_address) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			$query		= $this->pdo->prepare($qryInsert);
-			$docDetails	= array($file_index_val, $date_val, $matters, $note_sheet_file_name, $corr_note_sheet_file_name, $target_path_ns, $target_path_cns);
+			$docDetails	= array($file_index_val, $date_val, $matters_val, $note_sheet_file_name, $corr_note_sheet_file_name, $target_path_ns, $target_path_cns);
 			$query->execute($docDetails);
 			
 			$rowInsert	= $query->rowCount();
