@@ -95,7 +95,7 @@
 					{	
 						//$qryInsert= "INSERT INTO document_details(file_index, date_val, matters, note_sheet, corr_note_sheet, nst_file_address, cnst_file_address) VALUES ('$file_index_val', '$date_val', '$matters', '$note_sheet_file_name', '$corr_note_sheet_file_name', '$target_path_ns', '$target_path_cns')";
 						//$rsInsert= mysql_query($qryInsert) or die(mysql_error());
-						
+			
 						$rowInsert = $dbConnect->uploadNewDoc($file_index_val, $date_val, $matters, $note_sheet_file_name, $corr_note_sheet_file_name, 
 																$target_path_ns, $target_path_cns);
 						
