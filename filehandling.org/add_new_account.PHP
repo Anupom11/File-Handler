@@ -5,6 +5,7 @@
 
 <html>
 	
+	<head></head>
 	<body>
 		<?php
 		// checking for session validation
